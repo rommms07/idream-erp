@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user_schema;
+
+option go_package = "github.com/rommms07/idream-erp/core/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message User_fullname {
+  oneof fullname_oneof {
+    string first_name = 1;
+    string last_name = 2;
+    string middle_name = 3;
+  }
+}
+
+enum User_gender {
+  MALE = 0;
+  FEMALE = 1;
+  NEUTRAL = 2;
+}
+
+message User {
+  uint64 id = 1;
+  string uname = 2;
+  User_fullname full_name = 3;
+  string email = 4;
+  string mobile = 5;
+  google.protobuf.Timestamp birthdate = 6;
+  google.protobuf.Timestamp created_at = 7;
+
+  // picture_url points to a specific image resource on a file system.
+  string picture_url = 8;
+  User_gender gender = 9;
+}
+
