@@ -24,8 +24,12 @@ type appVersion struct {
 // any field in the app_config.json that does not corresponds to any of the fields of appConfigType
 // will inevitably ignored by the `loadConfig`
 type appConfigType struct {
-	Version *appVersion
-	Message string
+	Version        *appVersion
+	FbSdkVersion   string
+	FbClientId     string
+	FbClientSecret string
+	FbRedirectUri  string
+	Message        string
 }
 
 var (
@@ -72,14 +76,33 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
+	sdkverpatt := regexp.MustCompile(`^v\d{2,}[.]\d{1}$`)
+
+	fbSdkVer := os.Getenv("FB_SDK_VERSION")
+	fbClientId := os.Getenv("FB_CLIENT_ID")
+	fbClientSecret := os.Getenv("FB_CLIENT_SECRET")
+	fbRedirectUri := os.Getenv("FB_REDIRECT_URI")
+
+	if !sdkverpatt.MatchString(fbSdkVer) {
+		fmt.Fprintf(os.Stderr, "FB_SDK_VERSION did not satisfy the expected version regexp.")
+		os.Exit(1)
+	}
+
 	loadedConfig = &appConfigType{
-		Version: parseVersion(conf["version"].(string)),
-		Message: conf["message"].(string),
+		Version:        parseVersion(conf["version"].(string)),
+		Message:        conf["message"].(string),
+		FbSdkVersion:   fbSdkVer,
+		FbClientId:     fbClientId,
+		FbClientSecret: fbClientSecret,
+		FbRedirectUri:  fbRedirectUri,
 	}
 }
 
 // AppConfig returns the `loadedConfig` struct locally defined in this scope.
 func AppConfig() *appConfigType {
-	loadConfig()
+	if loadedConfig == nil {
+		loadConfig()
+	}
+
 	return loadedConfig
 }
