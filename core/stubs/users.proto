@@ -20,6 +20,16 @@ enum User_gender {
   NEUTRAL = 2;
 }
 
+enum User_type {
+  NORMAL = 0;
+  PRIVILEGED = 1;
+}
+
+enum TokenType {
+  SHORT = 0;
+  LONG = 1;
+}
+
 message User {
   uint64 id = 1;
   string uname = 2;
@@ -32,5 +42,13 @@ message User {
   // picture_url points to a specific image resource on a file system.
   string picture_url = 8;
   User_gender gender = 9;
+  User_type type = 10;
+  uint64 fbid = 11;
 }
 
+message UserFacebookToken {
+  User owner = 1;
+  string access_token = 2;
+  TokenType type = 3;
+  google.protobuf.Timestamp expires_in = 4;
+}

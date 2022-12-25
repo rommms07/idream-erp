@@ -10,6 +10,14 @@ import (
 	"github.com/rommms07/idream-erp/config"
 )
 
+// gormConfig schema is used by the appConfigType that contains the struct info of our gormConfig
+// defined in $ROOTDIR/config/app_config.json; If you want to add an extra fields to the appConfig.gormConfig
+// you can update this schema to incldue the newly added field to the parsed config.
+type gormConfig struct {
+	DefaultStringSize uint64
+	DisableDateTimePrecision, DontSupportRenameIndex, DontSupportRenameColumn, SkipInitVersion bool
+}
+
 // appVersion struct is the schema for the parsed version defined in the app_config.json if the version
 // is not formatted properly `<major>.<minor>.<build>-<release>` the output will get truncated by the
 // `loadConfig`.
@@ -24,12 +32,14 @@ type appVersion struct {
 // any field in the app_config.json that does not corresponds to any of the fields of appConfigType
 // will inevitably ignored by the `loadConfig`
 type appConfigType struct {
-	Version        *appVersion
+	Version        string
+	VersionInfo    *appVersion
 	FbSdkVersion   string
 	FbClientId     string
 	FbClientSecret string
 	FbRedirectUri  string
 	Message        string
+	GormConfig     *gormConfig
 }
 
 var (
@@ -63,14 +73,15 @@ func parseVersion(v string) *appVersion {
 // content to fit into the appConfigType struct. This can be called by any batch codes that modifies the
 // app_config.json at runtime to rehydrate the `loadedConfig` struct.
 func loadConfig() {
-	var conf map[string]any
+	loadedConfig = &appConfigType{}
+
 	b, err := os.ReadFile(config.DEFAULT)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error loading app_config.json: %s", err.Error())
 		os.Exit(1)
 	}
 
-	err = json.Unmarshal(b, &conf)
+	err = json.Unmarshal(b, &loadedConfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error unmarshaling app_config.json: %s", err.Error())
 		os.Exit(1)
@@ -88,14 +99,11 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
-	loadedConfig = &appConfigType{
-		Version:        parseVersion(conf["version"].(string)),
-		Message:        conf["message"].(string),
-		FbSdkVersion:   fbSdkVer,
-		FbClientId:     fbClientId,
-		FbClientSecret: fbClientSecret,
-		FbRedirectUri:  fbRedirectUri,
-	}
+	loadedConfig.VersionInfo = parseVersion(loadedConfig.Version)	
+	loadedConfig.FbClientId = fbClientId
+	loadedConfig.FbClientSecret = fbClientSecret
+	loadedConfig.FbSdkVersion = fbSdkVer
+	loadedConfig.FbRedirectUri = fbRedirectUri
 }
 
 // AppConfig returns the `loadedConfig` struct locally defined in this scope.

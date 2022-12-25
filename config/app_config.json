@@ -1,4 +1,11 @@
 {
-  "version": "0.0.1-alpha",
-  "message": ""
+	"version": "0.0.1-alpha",
+	"message": "",
+	"gormConfig": {
+		"defaultStringSize": 256,
+		"disableDateTimePrecision": false,
+		"dontSupportRenameIndex": true,
+		"dontSupportRenameColumn": true,
+		"skipInitVersion": false
+	}
 }

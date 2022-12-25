@@ -18,7 +18,7 @@ func Test_mustLoadMockAppConfigFromMocksFolder(t *testing.T) {
 
 	conf := source.AppConfig()
 
-	assert.Equal(t, conf.Version.Release, "testing", "Did not match the expected version.")
+	assert.Equal(t, conf.VersionInfo.Release, "testing", "Did not match the expected version.")
 	assert.Equal(t, conf.Message, "This message is coming from the mocks/app_config.json", "Did not match the expected message.")
 	config.DEFAULT = bak
 }
