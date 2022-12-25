@@ -20,6 +20,5 @@ generate-go-pb: $(wildcard ${ROOTDIR}/core/stubs/*.proto)
 test:
 	go test -v ./...
 
-access_token_demo:
-	curl -i -X GET \
-		"https://www.facebook.com/v15.0/dialog/oauth?client_id=${FB_CLIENT_ID}&redirect_uri=\{"https://www.google.com"\}"
+examples/fb_loginflow:
+	${ROOTDIR}/examples/core/auth/fb-loginflow.sh
