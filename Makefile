@@ -7,7 +7,7 @@ else
 include .env.production
 endif
 
-.PHONY: all clean generate-go-pb test 
+.PHONY: all clean generate-go-pb test dev
 all:
 
 clean:

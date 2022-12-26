@@ -14,6 +14,6 @@ curl $FB_GRAPH_URL
 echo "\nEnter access token to debug: "
 read FB_ACCESS_TOKEN
 
-export FB_DEBUG_URL="https://graph.facebook.com/debug_token?input_token=$FB_ACCESS_TOKEN&access_token=$FB_CLIENT_ID|$FB_CLIENT_SECRET\n"
+export FB_DEBUG_URL="https://graph.facebook.com/debug_token?input_token=$FB_ACCESS_TOKEN&access_token=$FB_CLIENT_ID|$FB_CLIENT_SECRET"
 
 curl $FB_DEBUG_URL

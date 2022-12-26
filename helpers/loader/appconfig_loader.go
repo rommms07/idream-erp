@@ -1,4 +1,4 @@
-package source
+package loader
 
 import (
 	"encoding/json"
@@ -8,13 +8,14 @@ import (
 	"strconv"
 
 	"github.com/rommms07/idream-erp/config"
+	"gorm.io/gorm"
 )
 
 // gormConfig schema is used by the appConfigType that contains the struct info of our gormConfig
 // defined in $ROOTDIR/config/app_config.json; If you want to add an extra fields to the appConfig.gormConfig
 // you can update this schema to incldue the newly added field to the parsed config.
-type gormConfig struct {
-	DefaultStringSize uint64
+type mysqlConfig struct {
+	DefaultStringSize                                                                          uint64
 	DisableDateTimePrecision, DontSupportRenameIndex, DontSupportRenameColumn, SkipInitVersion bool
 }
 
@@ -31,7 +32,7 @@ type appVersion struct {
 // appConfigType is the map to which the $ROODIR/config/app_config.json will be based upon on,
 // any field in the app_config.json that does not corresponds to any of the fields of appConfigType
 // will inevitably ignored by the `loadConfig`
-type appConfigType struct {
+type AppConfigType struct {
 	Version        string
 	VersionInfo    *appVersion
 	FbSdkVersion   string
@@ -39,11 +40,14 @@ type appConfigType struct {
 	FbClientSecret string
 	FbRedirectUri  string
 	Message        string
-	GormConfig     *gormConfig
+	Mysql_dsn      string
+
+	MysqlConfig *mysqlConfig
+	GormConfig  *gorm.Config
 }
 
 var (
-	loadedConfig *appConfigType
+	loadedConfig *AppConfigType
 )
 
 // parseVersion parses the version defined in the app_config.json, since this function can be called anywhere
@@ -73,7 +77,9 @@ func parseVersion(v string) *appVersion {
 // content to fit into the appConfigType struct. This can be called by any batch codes that modifies the
 // app_config.json at runtime to rehydrate the `loadedConfig` struct.
 func loadConfig() {
-	loadedConfig = &appConfigType{}
+	loadedConfig = &AppConfigType{
+		GormConfig: &gorm.Config{},
+	}
 
 	b, err := os.ReadFile(config.DEFAULT)
 	if err != nil {
@@ -99,15 +105,16 @@ func loadConfig() {
 		os.Exit(1)
 	}
 
-	loadedConfig.VersionInfo = parseVersion(loadedConfig.Version)	
+	loadedConfig.VersionInfo = parseVersion(loadedConfig.Version)
 	loadedConfig.FbClientId = fbClientId
 	loadedConfig.FbClientSecret = fbClientSecret
 	loadedConfig.FbSdkVersion = fbSdkVer
 	loadedConfig.FbRedirectUri = fbRedirectUri
+	loadedConfig.Mysql_dsn = os.Getenv("MYSQL_DSN")
 }
 
 // AppConfig returns the `loadedConfig` struct locally defined in this scope.
-func AppConfig() *appConfigType {
+func AppConfig() *AppConfigType {
 	if loadedConfig == nil {
 		loadConfig()
 	}

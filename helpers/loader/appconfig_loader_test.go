@@ -1,4 +1,4 @@
-package source_test
+package loader_test
 
 import (
 	"fmt"

@@ -1,11 +1,20 @@
 {
 	"version": "0.0.1-alpha",
 	"message": "",
-	"gormConfig": {
+	"mysqlConfig": {
 		"defaultStringSize": 256,
 		"disableDateTimePrecision": false,
 		"dontSupportRenameIndex": true,
 		"dontSupportRenameColumn": true,
 		"skipInitVersion": false
+	},
+	"gormConfig": {
+		"skipDefaultTransaction": true,
+		"dryRun": false,
+		"prepareStmt": true,
+		"disableNestedTransaction": true,
+		"allowGlobalUpdate": true,
+		"disableAutomaticPing": false,
+		"disableForeignKeyConstraintWhenMigrating": true
 	}
 }
