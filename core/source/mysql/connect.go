@@ -10,8 +10,7 @@ import (
 var _default *gorm.DB
 
 func Connect() (err error) {
-	config := app_config.AppConfig()
-	_default, err = gorm.Open(mysql.Open(config.Mysql_dsn), gorm_config.DEFAULT)
+	_default, err = gorm.Open(mysql.Open(app_config.Dsn()), gorm_config.DEFAULT)
 	return
 }
 

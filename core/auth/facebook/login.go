@@ -17,7 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/rommms07/idream-erp/config"
-	"github.com/rommms07/idream-erp/helpers/source"
+	"github.com/rommms07/idream-erp/helpers/loader"
 )
 
 type FacebookLoginOptions struct {
@@ -42,10 +42,26 @@ type FacebookAccessToken struct {
 	Token_type   string
 }
 
-var (
-	FACEBOOK_LOGIN_DIALOG = fmt.Sprintf("https://www.facebook.com/%s/dialog/oauth", source.AppConfig().FbSdkVersion)
-	FACEBOOK_GRAPH        = fmt.Sprintf("https://graph.facebook.com/%s", source.AppConfig().FbSdkVersion)
+type FacebookPageAccessToken struct {
+	Access_token  string
+	Category      string
+	Category_list []*pageAccessTokenCategories
+	Name          string
+	Id            string
+	Tasks         []string
+}
 
+type pageAccessTokenCategories struct {
+	Id   uint64
+	Name string
+}
+
+var (
+	FACEBOOK_LOGIN_DIALOG = fmt.Sprintf("https://www.facebook.com/%s/dialog/oauth", loader.AppConfig().FbSdkVersion)
+	FACEBOOK_GRAPH        = fmt.Sprintf("https://graph.facebook.com/%s", loader.AppConfig().FbSdkVersion)
+
+	// pendingLoginReq is the critical part of the login flow. Always monitor this map with a middleware, avoiding
+	// so may risk the server becoming a target of memory-overflowing surge of requests.
 	pendingLoginReq = make(map[string]*FacebookLoginOptions)
 )
 
@@ -55,19 +71,19 @@ func get_def_opts(q url.Values, opts *FacebookLoginOptions) (string, string, str
 	if len(opts.RedirectUri) != 0 {
 		redirect_uri = opts.RedirectUri
 	} else {
-		redirect_uri = source.AppConfig().FbRedirectUri
+		redirect_uri = loader.AppConfig().FbRedirectUri
 	}
 
 	if len(opts.ClientId) != 0 {
 		client_id = opts.ClientId
 	} else {
-		client_id = source.AppConfig().FbClientId
+		client_id = loader.AppConfig().FbClientId
 	}
 
 	if len(opts.ClientSecret) != 0 {
 		client_secret = opts.ClientSecret
 	} else {
-		client_secret = source.AppConfig().FbClientSecret
+		client_secret = loader.AppConfig().FbClientSecret
 	}
 
 	return redirect_uri, client_id, client_secret
@@ -75,7 +91,7 @@ func get_def_opts(q url.Values, opts *FacebookLoginOptions) (string, string, str
 
 // make_fblogin_url returns a facebook login url which can be use to generate an authorization code.
 func make_fblogin_url(opts *FacebookLoginOptions) string {
-
+	config := loader.AppConfig()
 	login, err := url.Parse(FACEBOOK_LOGIN_DIALOG)
 	if err != nil {
 		return ""
@@ -85,7 +101,7 @@ func make_fblogin_url(opts *FacebookLoginOptions) string {
 	redirect_uri, client_id, _ := get_def_opts(q, opts)
 
 	q.Add("client_id", client_id)
-	q.Add("redirect_uri", redirect_uri)
+	q.Add("redirect_uri", fmt.Sprintf("%s://%s%s", config.ServerProto, config.ServerAddr, redirect_uri))
 
 	b, err := json.Marshal(opts.State)
 	if err != nil {
@@ -113,13 +129,14 @@ func write_rp(w io.Writer, data any) error {
 // to an access token.
 func exchange_code_to_token(opts *FacebookLoginOptions) (token *FacebookAccessToken, err error) {
 	token = &FacebookAccessToken{}
+	config := loader.AppConfig()
 	exchanger, _ := url.Parse(fmt.Sprintf("%s/oauth/access_token", FACEBOOK_GRAPH))
 	q := exchanger.Query()
 	redirect_uri, client_id, client_secret := get_def_opts(q, opts)
 
 	q.Add("client_id", client_id)
 	q.Add("client_secret", client_secret)
-	q.Add("redirect_uri", redirect_uri)
+	q.Add("redirect_uri", fmt.Sprintf("%s://%s%s", config.ServerProto, config.ServerAddr, redirect_uri))
 	q.Add("code", opts.Code)
 
 	exchanger.RawQuery = q.Encode()
@@ -154,13 +171,30 @@ func exchange_code_to_token(opts *FacebookLoginOptions) (token *FacebookAccessTo
 // kind of handler must be guarded by a rate limiting middleware to avoid someone abuse the
 // this handler or possible take down the server by overflowing the `pendingLoginRp`
 func FbRedirectHandler(c *gin.Context) {
+	stateQuery := c.Request.URL.Query().Get("state")
+
+	if len(stateQuery) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing state parameter"})
+		return
+	}
+
 	state := make(map[string]string)
-	err := json.Unmarshal([]byte(c.Request.URL.Query().Get("state")), &state)
+	err := json.Unmarshal([]byte(stateQuery), &state)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]any{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"status_code": http.StatusBadRequest,
 			"error":       err.Error(),
 		})
+
+		return
+	}
+
+	if _, exists := pendingLoginReq[state["uuid"]]; !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status_code": http.StatusBadRequest,
+			"message":     fmt.Sprintf("(uuid:%s) was not able to be indexed.", state["uuid"]),
+		})
+
 		return
 	}
 
@@ -170,6 +204,7 @@ func FbRedirectHandler(c *gin.Context) {
 			"status_code": http.StatusBadRequest,
 			"error":       err.Error(),
 		})
+
 		return
 	}
 
@@ -194,8 +229,11 @@ func FbRedirectHandler(c *gin.Context) {
 // to get a short-lived user access token from Facebook.
 func Login(opts *FacebookLoginOptions) (*FacebookAccessToken, error) {
 	opts.Pending = make(chan struct{})
-	opts.State = map[string]string{
-		"uuid": uuid.NewString(),
+
+	if opts.State == nil {
+		opts.State = map[string]string{
+			"uuid": uuid.NewString(),
+		}
 	}
 
 	pendingLoginReq[opts.State["uuid"]] = opts
@@ -219,11 +257,37 @@ func Login(opts *FacebookLoginOptions) (*FacebookAccessToken, error) {
 		return nil, errors.New("error: facebook login timeout")
 	}
 
-	// Exchange the received authorization code for a new access token.
+	// Exchange the received authorzation code for a new access token.
 	token, err := exchange_code_to_token(opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return token, nil
+}
+
+func (opts *FacebookLoginOptions) GetPageAccessTokens(fbUserId uint64) []*FacebookPageAccessToken {
+	token := opts.Token
+
+	fbGraphUrl, _ := url.Parse(fmt.Sprintf("%s/%d/accounts", FACEBOOK_GRAPH, fbUserId))
+	q := fbGraphUrl.Query()
+
+	q.Add("access_token", token.Access_token)
+	q.Add("fields", "name,access_token")
+
+	fbGraphUrl.RawQuery = q.Encode()
+
+	return make([]*FacebookPageAccessToken, 1)
+}
+
+func LoginUrl(opts *FacebookLoginOptions) string {
+	opts.State = map[string]string{
+		"uuid": uuid.NewString(),
+	}
+
+	if len(opts.LoginUrl) == 0 {
+		opts.LoginUrl = make_fblogin_url(opts)
+	}
+
+	return opts.LoginUrl
 }

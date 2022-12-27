@@ -13,14 +13,21 @@ all:
 clean:
 	rm -rf ${ROOTDIR}/core/pb/*.go	
 
-generate-go-pb: $(wildcard ${ROOTDIR}/core/stubs/*.proto)
+gen_go_pb: $(wildcard ${ROOTDIR}/core/stubs/*.proto)
 	${ROOTDIR}/helpers/generate-protobuf.sh
+
+db_create:
+	${ROOTDIR}/helpers/db.sh
 
 test:
 	go clean -v -testcache && SERVER_ADDR=localhost:5000 go test -v ./...
 
-api:
-	go run ${ROOTDIR}/cmd/main.go
+examples/gorm_mysql_connect:
+	go run ${ROOTDIR}/examples/core/source/mysql/connect.go
+
+examples/fb_api:
+	go run ${ROOTDIR}/examples/core/auth/main.go
 
 examples/fb_loginflow:
 	${ROOTDIR}/examples/core/auth/fb-loginflow.sh
+

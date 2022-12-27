@@ -9,13 +9,18 @@ import (
 
 func main() {
 	go func() {
-		token, err := facebook.Login(&facebook.FacebookLoginOptions{})
+		opts := &facebook.FacebookLoginOptions{}
+
+		println(facebook.LoginUrl(opts))
+
+		token, err := facebook.Login(opts)
 		if err != nil {
 			log.Fatalf(err.Error())
 			return
 		}
 
-		println(token.Access_token)
+		ltoken, _ := token.GetLongLivedToken()
+		println(ltoken.Access_token)
 	}()
 	api.Start()
 }

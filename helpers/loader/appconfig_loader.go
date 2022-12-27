@@ -40,8 +40,18 @@ type AppConfigType struct {
 	FbClientSecret string
 	FbRedirectUri  string
 	ServerAddr     string
+	ServerProto    string
+	ServerCertFile string
+	ServerKeyFile  string
 	Message        string
-	Mysql_dsn      string
+
+	MysqlUser     string
+	MysqlPassword string
+	MysqlType     string
+	MysqlSock     string
+	MysqlAddr     string
+	MysqlDbName   string
+	MysqlFlags    string
 
 	MysqlConfig *mysqlConfig
 	GormConfig  *gorm.Config
@@ -111,8 +121,39 @@ func loadConfig() {
 	loadedConfig.FbClientSecret = fbClientSecret
 	loadedConfig.FbSdkVersion = fbSdkVer
 	loadedConfig.FbRedirectUri = fbRedirectUri
-	loadedConfig.Mysql_dsn = os.Getenv("MYSQL_DSN")
 	loadedConfig.ServerAddr = os.Getenv("SERVER_ADDR")
+	loadedConfig.ServerProto = os.Getenv("SERVER_PROTO")
+	loadedConfig.ServerCertFile = os.Getenv("SERVER_CERT_FILE")
+	loadedConfig.ServerKeyFile = os.Getenv("SERVER_KEY_FILE")
+	loadedConfig.MysqlUser = os.Getenv("MYSQL_USER")
+	loadedConfig.MysqlPassword = os.Getenv("MYSQL_PASSWORD")
+	loadedConfig.MysqlType = os.Getenv("MYSQL_TYPE")
+	loadedConfig.MysqlSock = os.Getenv("MYSQL_SOCK")
+	loadedConfig.MysqlAddr = os.Getenv("MYSQL_ADDR")
+	loadedConfig.MysqlDbName = os.Getenv("MYSQL_DB_NAME")
+	loadedConfig.MysqlFlags = os.Getenv("MYSQL_FLAGS")
+}
+
+func Dsn() string {
+	AppConfig()
+
+	connAddr := ""
+
+	if loadedConfig.MysqlType == "tcp" {
+		connAddr = loadedConfig.MysqlAddr
+	} else if loadedConfig.MysqlType == "unix" {
+		connAddr = loadedConfig.MysqlSock
+	}
+
+	return fmt.Sprintf(
+		`%s%s@%s(%s)/%s?%s`,
+		loadedConfig.MysqlUser,
+		":"+loadedConfig.MysqlPassword,
+		loadedConfig.MysqlType,
+		connAddr,
+		loadedConfig.MysqlDbName,
+		loadedConfig.MysqlFlags,
+	)
 }
 
 // AppConfig returns the `loadedConfig` struct locally defined in this scope.

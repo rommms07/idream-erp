@@ -17,3 +17,10 @@ read FB_ACCESS_TOKEN
 export FB_DEBUG_URL="https://graph.facebook.com/debug_token?input_token=$FB_ACCESS_TOKEN&access_token=$FB_CLIENT_ID|$FB_CLIENT_SECRET"
 
 curl $FB_DEBUG_URL
+echo -e "\n\nEnter user id: "
+read USER_ID
+echo -e "\n\nPage access token: "
+
+export FB_PAGE_ACCESS_URL="https://graph.facebook.com/$USER_ID/accounts?fields=name,access_token&access_token=$FB_ACCESS_TOKEN"
+
+curl $FB_PAGE_ACCESS_URL

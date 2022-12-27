@@ -26,8 +26,8 @@ enum User_type {
 }
 
 enum TokenType {
-  SHORT = 0;
-  LONG = 1;
+  SHORT_LIVED = 0;
+  LONG_LIVED = 1;
 }
 
 message User {

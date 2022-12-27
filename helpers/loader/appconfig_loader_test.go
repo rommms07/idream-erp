@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/rommms07/idream-erp/config"
-	"github.com/rommms07/idream-erp/helpers/source"
+	"github.com/rommms07/idream-erp/helpers/loader"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func Test_mustLoadMockAppConfigFromMocksFolder(t *testing.T) {
 	bak := config.DEFAULT
 	config.DEFAULT = fmt.Sprintf("%s/tests/mocks/app_config.json", config.ROOTDIR)
 
-	conf := source.AppConfig()
+	conf := loader.AppConfig()
 
 	assert.Equal(t, conf.VersionInfo.Release, "testing", "Did not match the expected version.")
 	assert.Equal(t, conf.Message, "This message is coming from the mocks/app_config.json", "Did not match the expected message.")
