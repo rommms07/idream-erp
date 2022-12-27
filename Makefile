@@ -7,18 +7,20 @@ else
 include .env.production
 endif
 
-.PHONY: all clean generate-go-pb test dev
+.PHONY: all clean generate-go-pb test api 
 all:
 
 clean:
-	echo ${FB_CLIENT_ID}
 	rm -rf ${ROOTDIR}/core/pb/*.go	
 
 generate-go-pb: $(wildcard ${ROOTDIR}/core/stubs/*.proto)
 	${ROOTDIR}/helpers/generate-protobuf.sh
 
 test:
-	go test -v ./...
+	go clean -v -testcache && SERVER_ADDR=localhost:5000 go test -v ./...
+
+api:
+	go run ${ROOTDIR}/cmd/main.go
 
 examples/fb_loginflow:
 	${ROOTDIR}/examples/core/auth/fb-loginflow.sh

@@ -39,6 +39,7 @@ type AppConfigType struct {
 	FbClientId     string
 	FbClientSecret string
 	FbRedirectUri  string
+	ServerAddr     string
 	Message        string
 	Mysql_dsn      string
 
@@ -111,6 +112,7 @@ func loadConfig() {
 	loadedConfig.FbSdkVersion = fbSdkVer
 	loadedConfig.FbRedirectUri = fbRedirectUri
 	loadedConfig.Mysql_dsn = os.Getenv("MYSQL_DSN")
+	loadedConfig.ServerAddr = os.Getenv("SERVER_ADDR")
 }
 
 // AppConfig returns the `loadedConfig` struct locally defined in this scope.
