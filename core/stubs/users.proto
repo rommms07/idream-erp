@@ -52,3 +52,4 @@ message UserFacebookToken {
   TokenType type = 3;
   google.protobuf.Timestamp expires_in = 4;
 }
+
