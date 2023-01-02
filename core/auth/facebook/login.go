@@ -20,8 +20,16 @@ import (
 	"github.com/rommms07/idream-erp/helpers/loader"
 )
 
+type LoginType uint
+
+const (
+	LoginType_CONSUMER = iota
+	BUSINESS
+)
+
 type FacebookLoginOptions struct {
 	LoginUrl     string
+	LoginType    LoginType
 	ClientId     string
 	ClientSecret string
 	RedirectUri  string
@@ -66,24 +74,26 @@ var (
 )
 
 func get_def_opts(q url.Values, opts *FacebookLoginOptions) (string, string, string) {
-	redirect_uri, client_id, client_secret := "", "", ""
+	var redirect_uri, client_id, client_secret string
+
+	config := loader.AppConfig()
 
 	if len(opts.RedirectUri) != 0 {
 		redirect_uri = opts.RedirectUri
 	} else {
-		redirect_uri = loader.AppConfig().FbRedirectUri
+		redirect_uri = config.FbRedirectUri
 	}
 
 	if len(opts.ClientId) != 0 {
 		client_id = opts.ClientId
 	} else {
-		client_id = loader.AppConfig().FbClientId
+		client_id = config.GetFbClientId(uint(opts.LoginType))
 	}
 
 	if len(opts.ClientSecret) != 0 {
 		client_secret = opts.ClientSecret
 	} else {
-		client_secret = loader.AppConfig().FbClientSecret
+		client_secret = config.GetFbClientSecret(uint(opts.LoginType))
 	}
 
 	return redirect_uri, client_id, client_secret
@@ -264,20 +274,6 @@ func Login(opts *FacebookLoginOptions) (*FacebookAccessToken, error) {
 	}
 
 	return token, nil
-}
-
-func (opts *FacebookLoginOptions) GetPageAccessTokens(fbUserId uint64) []*FacebookPageAccessToken {
-	token := opts.Token
-
-	fbGraphUrl, _ := url.Parse(fmt.Sprintf("%s/%d/accounts", FACEBOOK_GRAPH, fbUserId))
-	q := fbGraphUrl.Query()
-
-	q.Add("access_token", token.Access_token)
-	q.Add("fields", "name,access_token")
-
-	fbGraphUrl.RawQuery = q.Encode()
-
-	return make([]*FacebookPageAccessToken, 1)
 }
 
 func LoginUrl(opts *FacebookLoginOptions) string {

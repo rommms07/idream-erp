@@ -38,6 +38,9 @@ Facebook already done that for us!
 5. Once they are now authenticated, a token is generated for them - these tokens are then
    used by the system to verify the user.
 
+6. If a privileged user made a user as a privileged user as well, it is mandatory for the newly
+   made user to relogin their account. This is done, due to how to Facebook API behaves.
+
 Note: Facebook Login is mandatory! No one can skip this process during the first phase of sign up.
 
 ===================================================================================================

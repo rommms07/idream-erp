@@ -39,6 +39,10 @@ type AppConfigType struct {
 	FbClientId     string
 	FbClientSecret string
 	FbRedirectUri  string
+
+	FbBusinessClientId     string
+	FbBusinessClientSecret string
+
 	ServerAddr     string
 	ServerProto    string
 	ServerCertFile string
@@ -57,6 +61,34 @@ type AppConfigType struct {
 
 	MysqlConfig *mysqlConfig
 	GormConfig  *gorm.Config
+}
+
+func (conf *AppConfigType) GetFbClientId(typ uint) (client_id string) {
+
+	switch typ {
+	// LoginType_CONSUMER
+	case 0:
+		client_id = conf.FbClientId
+	// LoginType_BUSINESS
+	case 1:
+		client_id = conf.FbBusinessClientId
+	}
+
+	return
+}
+
+func (conf *AppConfigType) GetFbClientSecret(typ uint) (client_secret string) {
+
+	switch typ {
+	// LoginType_CONSUMER
+	case 0:
+		client_secret = conf.FbClientSecret
+	// LoginType_BUSINESS
+	case 1:
+		client_secret = conf.FbBusinessClientSecret
+	}
+
+	return
 }
 
 var (
@@ -123,6 +155,10 @@ func loadConfig() {
 	loadedConfig.FbClientSecret = fbClientSecret
 	loadedConfig.FbSdkVersion = fbSdkVer
 	loadedConfig.FbRedirectUri = fbRedirectUri
+
+	loadedConfig.FbBusinessClientId = os.Getenv("FB_BUSINESS_CLIENT_ID")
+	loadedConfig.FbBusinessClientSecret = os.Getenv("FB_BUSINESS_CLIENT_SECRET")
+
 	loadedConfig.ServerAddr = os.Getenv("SERVER_ADDR")
 	loadedConfig.ServerProto = os.Getenv("SERVER_PROTO")
 	loadedConfig.ServerCertFile = os.Getenv("SERVER_CERT_FILE")
