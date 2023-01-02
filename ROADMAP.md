@@ -40,4 +40,22 @@ Facebook already done that for us!
 
 Note: Facebook Login is mandatory! No one can skip this process during the first phase of sign up.
 
-##
+===================================================================================================
+
+# Graphical representation of what the development roadmap could look like.
+
+<pre>
+	+---------------+
+  |               |  1. Setting and implementing the app's configuration system. (ok)
+	|  Preliminary  |  2. Adding an authentication mechanism.
+	|               |  3. Implementing a simple command-line interface that would interact with the system.
+	+---------------+
+	       ||
+				 ||
+				 ||
+	+---------------+
+	|  Information  |
+	|   Gathering   |
+	+---------------+
+
+</pre>
