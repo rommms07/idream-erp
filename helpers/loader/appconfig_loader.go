@@ -45,6 +45,8 @@ type AppConfigType struct {
 	ServerKeyFile  string
 	Message        string
 
+	InuseDataSource string
+
 	MysqlUser     string
 	MysqlPassword string
 	MysqlType     string
@@ -132,6 +134,7 @@ func loadConfig() {
 	loadedConfig.MysqlAddr = os.Getenv("MYSQL_ADDR")
 	loadedConfig.MysqlDbName = os.Getenv("MYSQL_DB_NAME")
 	loadedConfig.MysqlFlags = os.Getenv("MYSQL_FLAGS")
+	loadedConfig.InuseDataSource = os.Getenv("INUSE_DATA_SOURCE")
 }
 
 func Dsn() string {

@@ -4,24 +4,72 @@ import (
 	"time"
 
 	"github.com/rommms07/idream-erp/core/pb"
+	"github.com/rommms07/idream-erp/core/source"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gorm.io/gorm"
 )
 
-type User struct {
-	Id                                 uint64 `gorm:"primaryKey"`
-	Uname                              string `gorm:"unique"`
-	First_name, Middle_name, Last_name string
-	Email                              string `gorm:"unique"`
-	Mobile                             string `gorm:"unique"`
-	Picture_url                        string
-	Gender                             pb.UserGender
-	Type                               pb.UserType
-	Fbid                               uint64 `gorm:"unique"`
-	Created_at                         time.Time
+func init() {
+	source.GormMigrator.Add(&User{}).Add(&UserAuthToken{})
 }
 
-type UserFacebookAccessToken struct {
-	User_id      uint64 `gorm:"uniqueIndex"`
-	Access_token string
-	Type         pb.TokenType
-	Expires_in   time.Time
+type User struct {
+	Id                              uint64 `gorm:"primaryKey"`
+	Uname                           string `gorm:"unique"`
+	FirstName, MiddleName, LastName string
+	Suffix                          uint64
+	Email                           string `gorm:"unique"`
+	Mobile                          string `gorm:"unique"`
+	PictureUrl                      string
+	Gender                          pb.UserGender
+	Type                            pb.UserType
+	Fbid                            uint64 `eorm:"unique"`
+	Birthdate                       time.Time
+	CreatedAt                       time.Time
+}
+
+type UserAuthToken struct {
+	UserId          uint64 `gorm:"uniqueIndex"`
+	AuthTokenString string `gorm:"unique"`
+	Type            pb.TokenType
+	ExpiresIn       time.Time
+}
+
+func (authToken *UserAuthToken) Owner() *User {
+	db := source.Source[gorm.DB]()
+	user := &User{}
+
+	db.Model(User{Id: authToken.UserId}).First(user)
+	return user
+}
+
+func (u *User) Proto() *pb.User {
+	return &pb.User{
+		Id:    u.Id,
+		Fbid:  u.Fbid,
+		Uname: u.Uname,
+
+		FullName: &pb.UserFullname{
+			FirstName:  u.FirstName,
+			LastName:   u.LastName,
+			MiddleName: u.MiddleName,
+			Suffix:     u.Suffix,
+		},
+
+		PictureUrl: u.PictureUrl,
+		Gender:     u.Gender,
+		Type:       u.Type,
+
+		Birthdate: timestamppb.New(u.Birthdate),
+		CreatedAt: timestamppb.New(u.CreatedAt),
+	}
+}
+
+func (u *UserAuthToken) Proto() *pb.UserAuthToken {
+	return &pb.UserAuthToken{
+		UserId:    u.UserId,
+		AuthToken: u.AuthTokenString,
+		Type:      u.Type,
+		ExpiresIn: timestamppb.New(u.ExpiresIn),
+	}
 }

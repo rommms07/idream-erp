@@ -7,5 +7,8 @@ import (
 func main() {
 	if err := mysql.Connect(); err != nil {
 		println(err.Error())
+	} else {
+		db, _ := mysql.Default()
+		println(db != nil)
 	}
 }

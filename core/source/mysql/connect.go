@@ -14,6 +14,11 @@ func Connect() (err error) {
 	return
 }
 
-func Default() *gorm.DB {
-	return _default
+func Default() (def *gorm.DB, err error) {
+	if _default == nil {
+		err = Connect()
+	}
+
+	def = _default
+	return
 }

@@ -7,11 +7,10 @@ option go_package = "github.com/rommms07/idream-erp/core/pb";
 import "google/protobuf/timestamp.proto";
 
 message User_fullname {
-  oneof fullname_oneof {
     string first_name = 1;
     string last_name = 2;
     string middle_name = 3;
-  }
+    uint64 suffix = 4;
 }
 
 enum User_gender {
@@ -26,29 +25,30 @@ enum User_type {
 }
 
 enum TokenType {
-  SHORT_LIVED = 0;
-  LONG_LIVED = 1;
+	FACEBOOK_TOKEN = 0;
+	JWT_TOKEN = 1;
 }
 
 message User {
   uint64 id = 1;
-  string uname = 2;
-  User_fullname full_name = 3;
-  string email = 4;
-  string mobile = 5;
-  google.protobuf.Timestamp birthdate = 6;
-  google.protobuf.Timestamp created_at = 7;
+	uint64 fbid = 2;
+  string uname = 3;
+  User_fullname full_name = 4;
+  string email = 5;
+  string mobile = 6;
+  google.protobuf.Timestamp birthdate = 7;
+  google.protobuf.Timestamp created_at = 8;
 
   // picture_url points to a specific image resource on a file system.
-  string picture_url = 8;
-  User_gender gender = 9;
-  User_type type = 10;
-  uint64 fbid = 11;
+  string picture_url = 9;
+  User_gender gender = 10;
+  User_type type = 11;
+
 }
 
-message UserFacebookToken {
-  User owner = 1;
-  string access_token = 2;
+message UserAuthToken {
+  uint64 user_id = 1;
+  string auth_token = 2;
   TokenType type = 3;
   google.protobuf.Timestamp expires_in = 4;
 }

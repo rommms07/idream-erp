@@ -16,8 +16,8 @@ clean:
 gen_go_pb: $(wildcard ${ROOTDIR}/core/stubs/*.proto)
 	${ROOTDIR}/helpers/generate-protobuf.sh
 
-db_create:
-	${ROOTDIR}/helpers/db.sh
+db/create:
+	${ROOTDIR}/helpers/db.sh create
 
 test:
 	go clean -v -testcache && SERVER_ADDR=localhost:5000 go test -v ./...
@@ -31,3 +31,5 @@ examples/fb_api:
 examples/fb_loginflow:
 	${ROOTDIR}/examples/core/auth/fb-loginflow.sh
 
+build/cmd:
+	go run cmd/main.go	
