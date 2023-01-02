@@ -54,8 +54,8 @@ Note: Facebook Login is mandatory! No one can skip this process during the first
 				 ||
 				 ||
 	+---------------+
-	|  Information  |
-	|   Gathering   |
+	|  Information  |  4. Design the gRPC and HTTP middleware mechanism. This is important for further implementation.
+	|   Gathering   |  5. 
 	+---------------+
 
 </pre>
