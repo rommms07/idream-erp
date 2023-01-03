@@ -42,6 +42,7 @@ type AppConfigType struct {
 
 	FbBusinessClientId     string
 	FbBusinessClientSecret string
+	FbBusinessClientScope  string
 
 	ServerAddr     string
 	ServerProto    string
@@ -158,6 +159,7 @@ func loadConfig() {
 
 	loadedConfig.FbBusinessClientId = os.Getenv("FB_BUSINESS_CLIENT_ID")
 	loadedConfig.FbBusinessClientSecret = os.Getenv("FB_BUSINESS_CLIENT_SECRET")
+	loadedConfig.FbBusinessClientScope = os.Getenv("FB_BUSINESS_CLIENT_SCOPE")
 
 	loadedConfig.ServerAddr = os.Getenv("SERVER_ADDR")
 	loadedConfig.ServerProto = os.Getenv("SERVER_PROTO")

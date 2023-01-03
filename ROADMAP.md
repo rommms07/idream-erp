@@ -32,14 +32,14 @@ Facebook already done that for us!
 
 4. There are two ways a user can be signed in the ERP, and it could be one of the following:
    
-	 - Facebook Login
+	 - Facebook Login (User, Admin)
 	 - Using a generated authentication code by the system.
 
 5. Once they are now authenticated, a token is generated for them - these tokens are then
    used by the system to verify the user.
 
 6. If a privileged user made a user as a privileged user as well, it is mandatory for the newly
-   made user to relogin their account. This is done, due to how to Facebook API behaves.
+   made admin user to relogin their account. This is done, due to how to Facebook API behaves.
 
 Note: Facebook Login is mandatory! No one can skip this process during the first phase of sign up.
 

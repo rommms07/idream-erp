@@ -24,7 +24,7 @@ type LoginType uint
 
 const (
 	LoginType_CONSUMER = iota
-	BUSINESS
+	LoginType_BUSINESS
 )
 
 type FacebookLoginOptions struct {
@@ -112,6 +112,10 @@ func make_fblogin_url(opts *FacebookLoginOptions) string {
 
 	q.Add("client_id", client_id)
 	q.Add("redirect_uri", fmt.Sprintf("%s://%s%s", config.ServerProto, config.ServerAddr, redirect_uri))
+
+	if opts.LoginType == LoginType_BUSINESS {
+		q.Add("scope", config.FbBusinessClientScope)
+	}
 
 	b, err := json.Marshal(opts.State)
 	if err != nil {
@@ -244,6 +248,10 @@ func Login(opts *FacebookLoginOptions) (*FacebookAccessToken, error) {
 		opts.State = map[string]string{
 			"uuid": uuid.NewString(),
 		}
+	} else if opts.Token != nil {
+		return opts.Token, errors.New("error: the provided FacebookLoginOptions is already authenticated")
+	} else if opts.Error != "" {
+		return nil, errors.New(opts.Error)
 	}
 
 	pendingLoginReq[opts.State["uuid"]] = opts
@@ -272,6 +280,10 @@ func Login(opts *FacebookLoginOptions) (*FacebookAccessToken, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Remove the opts from `pendingLoginReq` this will clear the memory and
+	// ensures that no other request can use the opts provide for the login.
+	delete(pendingLoginReq, opts.State["uuid"])
 
 	return token, nil
 }
