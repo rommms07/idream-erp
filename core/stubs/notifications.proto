@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package notifications_schema;
+
+option go_package = "github.com/rommms07/idream-erp/core/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Notifications {
+
+
+
+  google.protobuf.Timestamp created_at = 12;
+}
