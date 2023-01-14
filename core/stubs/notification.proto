@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package notifications_schema;
+package notification_schema;
 
 option go_package = "github.com/rommms07/idream-erp/core/pb";
 

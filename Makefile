@@ -32,4 +32,4 @@ examples/fb_loginflow:
 	${ROOTDIR}/examples/core/auth/fb-loginflow.sh
 
 build/cmd:
-	go run cmd/main.go	
+	go run cmd/main.go 1 2 3 4 5

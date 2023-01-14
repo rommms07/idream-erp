@@ -1,0 +1,43 @@
+[login_scene]
+
+Let's say that I am Rom Villanueva who wants to login into the system...
+
+1. I opened the website localhost:3000 and navigate to the login page.
+2. Click the 'Login With Facebook' button.
+
+  After a while... since Rom is a terribly unlucky the internet began to
+  slow down, and then after that... BOOM! The internet disappears.
+
+  I was terribly frustrated..
+
+3. Luckily there is another way to sign up the system, introducing the
+   offline login mode! This mode lets a user continue to use the system
+   even though they are offline. In this mode, the system will create
+   an isolated database for data that will be input to the server, so
+   when the internet goes back online the data will be pushed into the
+   main database where all the data should be.
+
+   I was like... :) Ok.
+
+   Cons with this approach:
+
+   - 
+
+4. So, I decided to pick this option to login into the system. I navigate
+   to the login page which the offline login page is located... and that
+   took me about 400ms, and now I see the 'Login with Id Code'.. Finally,
+   a terribly relieving sense wraps me.
+
+5. I click the 'Login With ID Code', and then it takes me to the system!
+   Viola~!
+
+Now that the unlucky Rom is logged into the system... the internet goes back again!
+The word that is coming out from his mouth taste likes a leaf of a poisonous plants.
+He now decided that he wants to login as online.
+
+6. There are two options or ways to login into the system again.. logout the current session,
+   
+   1. Go to the other login page specifically for online user and then login with Facebook. (not recommended)
+   2. Click the profile dropdown and then click 'Toggle Online', done!0 (recommended)
+
+[end_login_scene]

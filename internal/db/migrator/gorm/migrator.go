@@ -16,6 +16,10 @@ var (
 type GormMigrator struct {
 	models map[string]any
 	db     *gorm.DB
+
+	// CustomAutoMigrateFunc can be used by the developer to create a custom way of
+	// migrating the models stored in the m.models field.
+	CustomAutoMigrateFunc func(db *gorm.DB, model any)
 }
 
 func NewGormMigrator() *GormMigrator {
@@ -45,7 +49,12 @@ func (m *GormMigrator) Migrate() error {
 			continue
 		}
 
-		autoMigrateModel(m.db, model)
+		if m.CustomAutoMigrateFunc == nil {
+			autoMigrateModel(m.db, model)
+		} else {
+			m.CustomAutoMigrateFunc(m.db, model)
+		}
+
 	}
 
 	return nil

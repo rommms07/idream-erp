@@ -2,15 +2,15 @@ syntax = "proto3";
 
 package user_schema;
 
-option go_package = "github.com/rommms07/idream-erp/core/pb";
+option go_package = "github.com/rommms07/idream-erp/core/pb/user_schema";
 
 import "google/protobuf/timestamp.proto";
 
 message User_fullname {
-    string first_name = 1;
-    string last_name = 2;
-    string middle_name = 3;
-    uint64 suffix = 4;
+  string first_name = 1;
+  string last_name = 2;
+  string middle_name = 3;
+  uint64 suffix = 4;
 }
 
 enum User_gender {
@@ -22,6 +22,14 @@ enum User_gender {
 enum User_type {
   NORMAL = 0;
   PRIVILEGED = 1;
+}
+
+enum User_state {
+  USER_ACTIVE = 0;
+  USER_EPHEMERAL = 1;
+  USER_OFFLINE = 2;
+  USER_ONLINE = 3;
+  USER_DEACTIVATED = 4;
 }
 
 enum TokenType {
@@ -54,7 +62,20 @@ message User {
   string picture_url = 9;
   User_gender gender = 10;
   User_type type = 11;
+  User_state state = 12;
 
+  // uflags is an 8-bit number that contains the flag of operation or state
+  // the user is currently on.
+  //
+  // 0 - ephemeral flag
+  // 0 - 
+  // 0 -
+  // 0 -
+  // 0 -
+  // 0 -
+  // 0 - 
+  // 0 - 
+  uint64 uflags = 13;
 }
 
 message UserAuthToken {
@@ -63,4 +84,3 @@ message UserAuthToken {
   TokenType type = 3;
   google.protobuf.Timestamp expires_in = 4;
 }
-
