@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	go func() {
 		opts := &facebook.FacebookLoginOptions{LoginType: facebook.LoginType_BUSINESS}
 
