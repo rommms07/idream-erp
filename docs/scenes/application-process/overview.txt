@@ -1,0 +1,26 @@
+# Application process overview
+==============================
+
+Instead of manually asking for information from the possible applicant, we
+automate and store their details to a database as an ephemeral resource. Once
+they have decided to join our language program they're details will be put
+into a more persistent state. Below we will outline the process of how
+application works.
+
+Usually the application is different for various kinds of client. If the for
+example is willing to apply for the free program (sponsored) by an agency of 
+sort.. we will proceed with it.
+
+0. Application (ephemeral phase)
+1. Schedule the initial meeting for the ephemeral applicant (E).
+2. Send the initial necessary documents to the (E) applicant. Along with these
+   documents is the Registration Form (Enrollment Form).
+3. Screening the (E) applicant, when passed the (E) applicant will then
+   transition to (P) persistent applicant. 
+4. The (P) applicant will be scheduled for the "pre-interview" by TrueCare,
+   when they passed the interview they will now be qualified for the
+   free program! but if they fail, they're account will be flagged and then
+   decision making will happen.
+5. The candidate (P) applicants will now be then given a class schedules that
+   they must complete. (Standard or Fast track).
+

@@ -44,11 +44,13 @@ type AppConfigType struct {
 	FbBusinessClientSecret string
 	FbBusinessClientScope  string
 
-	ServerAddr     string
-	ServerProto    string
-	ServerCertFile string
-	ServerKeyFile  string
-	Message        string
+	ServerAddr       string
+	ServerProto      string
+	ServerCertFile   string
+	ServerKeyFile    string
+	ServerPassphrase string
+
+	Message string
 
 	InuseDataSource string
 
@@ -165,6 +167,8 @@ func loadConfig() {
 	loadedConfig.ServerProto = os.Getenv("SERVER_PROTO")
 	loadedConfig.ServerCertFile = os.Getenv("SERVER_CERT_FILE")
 	loadedConfig.ServerKeyFile = os.Getenv("SERVER_KEY_FILE")
+	loadedConfig.ServerPassphrase = os.Getenv("SERVER_PASSPHRASE")
+
 	loadedConfig.MysqlUser = os.Getenv("MYSQL_USER")
 	loadedConfig.MysqlPassword = os.Getenv("MYSQL_PASSWORD")
 	loadedConfig.MysqlType = os.Getenv("MYSQL_TYPE")

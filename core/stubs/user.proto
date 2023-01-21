@@ -67,10 +67,10 @@ message User {
   // uflags is an 8-bit number that contains the flag of operation or state
   // the user is currently on.
   //
-  // 0 - ephemeral flag
-  // 0 - 
-  // 0 -
-  // 0 -
+  // 0 -  ephemeral flag
+  // 0 -  applicant flag
+  // 0 -| 
+  // 0 -| status flag (only applicable for applicant). accept, reject, decision-making
   // 0 -
   // 0 -
   // 0 - 

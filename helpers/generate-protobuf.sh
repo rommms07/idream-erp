@@ -5,6 +5,8 @@ if [ ! $ROOTDIR ]; then
   exit;
 fi
 
+rm -rf $ROOTDIR/core/pb/*
+
 for i in $(ls $ROOTDIR/core/stubs/*.proto); do
   protofile=$(basename -s .proto $i)
   schemapath=${protofile}_schema

@@ -20,7 +20,6 @@ users. Make sure that there are only a few of these type of user in the system, 
 can be dangerous to have that many. If you want to give a user a specific access to
 a resource use the `uflags` for setting the access.
 
-
 [Ephemeral User]
 
 Any user that are tagged as an ephemeral will be deleted by the system based on a 
