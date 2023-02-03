@@ -1,7 +1,7 @@
 # ERP ROADMAP
 =============
 
-Before we start implementing new features, we must first finish the designing our login mechanism
+Before we start implementing new features, we must first finish designing our login mechanism
 for the ERP. For now our main approach are the following:
 
 1. Using Facebook Login to authenticate our user to our ERP.
